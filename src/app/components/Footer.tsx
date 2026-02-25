@@ -89,7 +89,7 @@ export function Footer() {
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(232,99,42,0.08)", border: "1px solid rgba(232,99,42,0.15)" }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="#E8632A" strokeWidth="1.5" /><circle cx="12" cy="10" r="3" stroke="#E8632A" strokeWidth="1.5" /></svg>
                   </div>
-                  <span style={{ fontFamily: "DM Sans, sans-serif", fontSize: "0.85rem", fontWeight: 300 }}>{footer.address}</span>
+                  <span style={{ fontFamily: "DM Sans, sans-serif", fontSize: "0.85rem", fontWeight: 300 }}>Dubai</span>
                 </div>
               )}
             </div>

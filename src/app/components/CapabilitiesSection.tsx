@@ -7,7 +7,7 @@ const capabilities = [
     tags: ["Market research.", "Brand clarity.", "Go-to-market planning."],
     description: "We define direction before execution begins.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <svg width="44" height="44" viewBox="0 0 28 28" fill="none">
         <circle cx="14" cy="14" r="10" stroke="currentColor" strokeWidth="1.2" strokeDasharray="4 3" />
         <circle cx="14" cy="14" r="5" stroke="currentColor" strokeWidth="1.2" />
         <circle cx="14" cy="14" r="1.5" fill="currentColor" />
@@ -24,7 +24,7 @@ const capabilities = [
     tags: ["Content systems.", "Creative direction.", "Campaign storytelling."],
     description: "Built for visibility and consistency.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <svg width="44" height="44" viewBox="0 0 28 28" fill="none">
         <rect x="3" y="5" width="22" height="18" rx="3" stroke="currentColor" strokeWidth="1.2" />
         <path d="M3 10h22" stroke="currentColor" strokeWidth="1.2" />
         <circle cx="7" cy="7.5" r="1" fill="currentColor" />
@@ -39,7 +39,7 @@ const capabilities = [
     tags: ["Paid media strategy.", "Search optimization.", "Data-driven growth."],
     description: "Focused on measurable results.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <svg width="44" height="44" viewBox="0 0 28 28" fill="none">
         <polyline points="3,22 9,14 14,18 20,10 25,6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         <polyline points="20,6 25,6 25,11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -51,7 +51,7 @@ const capabilities = [
     tags: ["Video production.", "Commercial shoots.", "Campaign visuals."],
     description: "Designed to elevate perception.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <svg width="44" height="44" viewBox="0 0 28 28" fill="none">
         <rect x="3" y="7" width="16" height="14" rx="2" stroke="currentColor" strokeWidth="1.2" />
         <path d="M19 11l6-3v12l-6-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -63,7 +63,7 @@ const capabilities = [
     tags: ["Visual identity.", "Brand assets.", "Motion content."],
     description: "Crafted with precision and clarity.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <svg width="44" height="44" viewBox="0 0 28 28" fill="none">
         <path d="M6 22c0-2 3-3 5-5s3-5 3-5 1 3 3 5 5 3 5 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
         <circle cx="14" cy="8" r="3" stroke="currentColor" strokeWidth="1.2" />
         <circle cx="7" cy="16" r="1.5" fill="currentColor" opacity="0.4" />
@@ -77,7 +77,7 @@ const capabilities = [
     tags: ["Web platforms.", "Mobile Apps.", "E-commerce.", "Custom systems."],
     description: "Engineered for performance and scalability.",
     icon: (
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <svg width="44" height="44" viewBox="0 0 28 28" fill="none">
         <polyline points="8,18 3,14 8,10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         <polyline points="20,10 25,14 20,18" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         <line x1="16" y1="7" x2="12" y2="21" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
