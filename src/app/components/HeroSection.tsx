@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import heroBg from "figma:asset/8e2fbefb90f223baa265fe240c29d1a1121ce1fb.png";
+import heroBg from "../../assets/8e2fbefb90f223baa265fe240c29d1a1121ce1fb.png";
 import { useSiteData } from "../lib/siteDataStore";
 
 export function HeroSection() {
@@ -9,6 +9,15 @@ export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [serviceIdx, setServiceIdx] = useState(0);
   const [fading, setFading] = useState(false);
+  const [slideIdx, setSlideIdx] = useState(0);
+  const slides: Array<{ type: "image" | "video"; src: string }> =
+    hero.media && hero.media.length
+      ? hero.media
+      : [
+          { type: "image", src: heroBg },
+          { type: "image", src: "https://images.unsplash.com/photo-1701365516650-06e030f81613?q=80&w=1920&auto=format&fit=crop" },
+          { type: "video", src: "https://cdn.coverr.co/videos/coverr-creative-studio-1624/1080p.mp4" },
+        ];
 
   /* ── Mouse-tracking tint on the photo ── */
   useEffect(() => {
@@ -41,6 +50,13 @@ export function HeroSection() {
   const scrollDown = () =>
     document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSlideIdx((i) => (i + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(id);
+  }, [slides.length]);
+
   return (
     <section
       id="home"
@@ -48,13 +64,31 @@ export function HeroSection() {
       className="relative w-full overflow-hidden"
       style={{ height: "100vh", minHeight: "680px" }}
     >
-      {/* ════════ Background Photo ════════ */}
       <div className="absolute inset-0">
-        <ImageWithFallback
-          src={heroBg}
-          alt=""
-          className="w-full h-full object-cover object-center"
-        />
+        {slides.map((s, i) => (
+          <div
+            key={i}
+            className="absolute inset-0 transition-opacity duration-700"
+            style={{ opacity: slideIdx === i ? 1 : 0 }}
+          >
+            {s.type === "video" ? (
+              <video
+                src={s.src}
+                muted
+                playsInline
+                autoPlay
+                loop
+                className="w-full h-full object-cover object-center"
+              />
+            ) : (
+              <ImageWithFallback
+                src={s.src}
+                alt=""
+                className="w-full h-full object-cover object-center"
+              />
+            )}
+          </div>
+        ))}
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(8,8,8,0.20) 0%, rgba(8,8,8,0.15) 30%, rgba(8,8,8,0.70) 65%, rgba(8,8,8,0.98) 100%)" }} />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to right, rgba(8,8,8,0.92) 0%, rgba(8,8,8,0.55) 40%, rgba(8,8,8,0.15) 72%)" }} />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(8,8,8,0.70) 0%, transparent 28%)" }} />
@@ -114,7 +148,7 @@ export function HeroSection() {
               </span>
             </button>
 
-            <button onClick={() => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" })}
+            <button onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
               className="group flex items-center gap-2.5 bg-transparent border-none cursor-pointer text-white/40 hover:text-white/80 transition-colors duration-300"
               style={{ fontFamily: "DM Sans, sans-serif", fontSize: "0.82rem", letterSpacing: "0.12em" }}>
               <span className="w-8 h-px group-hover:w-12 transition-all duration-400" style={{ background: "currentColor", display: "block" }} />
@@ -143,7 +177,7 @@ export function HeroSection() {
             <div className="flex items-center justify-between pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
               <div><div className="text-white/25 text-xs" style={{ fontFamily: "DM Sans, sans-serif" }}>ROI</div><div className="text-white" style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "0.85rem" }}>12×</div></div>
               <div><div className="text-white/25 text-xs" style={{ fontFamily: "DM Sans, sans-serif" }}>Market</div><div className="text-white" style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "0.85rem" }}>MENA</div></div>
-              <button onClick={() => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" })}
+              <button onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
                 className="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer border-none transition-opacity duration-300 hover:opacity-80"
                 style={{ background: "linear-gradient(135deg, #E8632A, #9B5DE5)" }}>
                 <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>

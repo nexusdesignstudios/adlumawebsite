@@ -1,13 +1,14 @@
-import sevenZoneLogo from "figma:asset/600227056b7527b69705be543b80a752afdf113a.png";
-import geetLogo from "figma:asset/f9299fee2291d2653b9ad275166146e7d0dcf969.png";
-import logo3 from "figma:asset/9a46bf1421ea19514e084d6f8de44420cb549f46.png";
-import logo4 from "figma:asset/050284a61b1befb9fd4efcb5ee28b0e8213df906.png";
-import logo5 from "figma:asset/be057d547073de06678a38796ebc5c25417e74df.png";
-import logo6 from "figma:asset/5d0ae4cf5528886a7469ba06f79edad53593e92d.png";
-import nexusLogo from "figma:asset/96dee2bfb9864119bd21b5369f6dbcde771d81cc.png";
-import nexusDesignArabia from "figma:asset/330faa420bd606ea43428f48ae75c04f6ac26483.png";
+import { useEffect, useState } from "react";
+import sevenZoneLogo from "../../assets/600227056b7527b69705be543b80a752afdf113a.png";
+import geetLogo from "../../assets/f9299fee2291d2653b9ad275166146e7d0dcf969.png";
+import logo3 from "../../assets/9a46bf1421ea19514e084d6f8de44420cb549f46.png";
+import logo4 from "../../assets/050284a61b1befb9fd4efcb5ee28b0e8213df906.png";
+import logo5 from "../../assets/be057d547073de06678a38796ebc5c25417e74df.png";
+import logo6 from "../../assets/5d0ae4cf5528886a7469ba06f79edad53593e92d.png";
+import nexusLogo from "../../assets/96dee2bfb9864119bd21b5369f6dbcde771d81cc.png";
+import nexusDesignArabia from "../../assets/330faa420bd606ea43428f48ae75c04f6ac26483.png";
 
-const logos = [
+const defaultLogos = [
   { src: sevenZoneLogo, alt: "Seven Zone" },
   { src: geetLogo, alt: "Geet" },
   { src: logo3, alt: "Brand 3" },
@@ -19,6 +20,41 @@ const logos = [
 ];
 
 export function TrustedBrandsSection() {
+  const [heading, setHeading] = useState<{ pre: string; gradient: string } | null>(null);
+  const [logos, setLogos] = useState<{ src: string; alt: string }[]>(defaultLogos);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [contentsRes, brandsRes] = await Promise.all([
+          fetch("http://127.0.0.1:8000/api/contents"),
+          fetch("http://127.0.0.1:8000/api/trusted-brands"),
+        ]);
+        let newHeading = null as { pre: string; gradient: string } | null;
+        if (contentsRes.ok) {
+          const contents = await contentsRes.json();
+          const item = contents.find((c: any) => c.key === "trusted_brands_heading");
+          if (item) {
+            try {
+              const parsed = item.type === "json" ? JSON.parse(item.value || "{}") : null;
+              if (parsed && typeof parsed.pre === "string" && typeof parsed.gradient === "string") {
+                newHeading = { pre: parsed.pre, gradient: parsed.gradient };
+              }
+            } catch {}
+          }
+        }
+        if (newHeading) setHeading(newHeading);
+        if (brandsRes.ok) {
+          const list = await brandsRes.json();
+          if (Array.isArray(list) && list.length) {
+            setLogos(list.map((b: any) => ({ src: b.image_url || "", alt: b.name || "Brand" })));
+          }
+        }
+      } catch {}
+    };
+    load();
+  }, []);
+
   const track = [...logos, ...logos];
 
   return (
@@ -58,7 +94,7 @@ export function TrustedBrandsSection() {
             letterSpacing: "-0.02em",
           }}
         >
-          Trusted by{" "}
+          {(heading?.pre ?? "Trusted by") + " "}
           <span
             style={{
               background: "linear-gradient(90deg, #E8632A, #F5C842)",
@@ -67,7 +103,7 @@ export function TrustedBrandsSection() {
               backgroundClip: "text",
             }}
           >
-            Growing Brands.
+            {heading?.gradient ?? "Growing Brands."}
           </span>
         </h2>
       </div>

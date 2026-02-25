@@ -25,6 +25,7 @@ export interface HeroContent {
   ctaLabel: string;
   secondaryCta: string;
   yearBadge: string;
+  media?: { type: "image" | "video"; src: string }[];
 }
 
 export interface FooterContent {
@@ -144,6 +145,11 @@ export const DEFAULT_DATA: SiteData = {
     ctaLabel: "Discover Adluma",
     secondaryCta: "VIEW WORK",
     yearBadge: "Est. 2018",
+    media: [
+      { type: "image", src: "https://images.unsplash.com/photo-1701365516650-06e030f81613?q=80&w=1920&auto=format&fit=crop" },
+      { type: "image", src: "https://images.unsplash.com/photo-1764347295958-6a729b1fdf7e?q=80&w=1920&auto=format&fit=crop" },
+      { type: "video", src: "https://cdn.coverr.co/videos/coverr-creative-studio-1624/1080p.mp4" },
+    ],
   },
 
   footer: {

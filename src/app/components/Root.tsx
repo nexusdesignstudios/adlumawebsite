@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { useSiteData } from "../lib/siteDataStore";
 
 export function Root() {
   const { seo } = useSiteData();
+  const location = useLocation();
 
   useEffect(() => {
     // Title
@@ -25,6 +26,10 @@ export function Root() {
     setMeta("twitter:description", seo.ogDescription || seo.metaDescription);
     setMeta("twitter:site", seo.twitterHandle);
   }, [seo]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-[#080808]" style={{ fontFamily: "DM Sans, sans-serif" }}>

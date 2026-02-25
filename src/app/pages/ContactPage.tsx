@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import logoImage from "figma:asset/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
+import logoImage from "../../assets/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
 import { MiniMap } from "../components/MiniMap";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 

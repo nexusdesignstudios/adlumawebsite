@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import logoImage from "figma:asset/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
-import sevenZoneImage from "figma:asset/4b815b9b548941073e0d8842d8dbf5d94778e98c.png";
-import townBurgerImage from "figma:asset/d1a2a4e8b558bc26136e92b07a134fc520fd1ac2.png";
-import bassthalkImage from "figma:asset/a3cb4c4c2ae77e698a15dab4ee50fb97b42ecf09.png";
+import logoImage from "../../assets/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
+import sevenZoneImage from "../../assets/4b815b9b548941073e0d8842d8dbf5d94778e98c.png";
+import townBurgerImage from "../../assets/d1a2a4e8b558bc26136e92b07a134fc520fd1ac2.png";
+import bassthalkImage from "../../assets/a3cb4c4c2ae77e698a15dab4ee50fb97b42ecf09.png";
 
 const categories = ["All", "Social Media", "Brand Strategy", "Web Development", "Motion Graphics", "Performance", "Production"];
 

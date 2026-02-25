@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import logoImage from "figma:asset/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
+import logoImage from "../../assets/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
 
 const navLinks = [
   { label: "Home", id: "home" },
   { label: "About", id: "about" },
-  { label: "Services", id: "capabilities" },
+  { label: "Services", id: "services" },
   { label: "Work", id: "projects" },
 ];
 

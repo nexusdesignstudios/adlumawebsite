@@ -1,44 +1,60 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+  type CarouselApi,
+} from "./ui/carousel";
+import sevenZoneLogo from "../../assets/600227056b7527b69705be543b80a752afdf113a.png";
+import geetLogo from "../../assets/f9299fee2291d2653b9ad275166146e7d0dcf969.png";
+import logo3 from "../../assets/9a46bf1421ea19514e084d6f8de44420cb549f46.png";
+import logo4 from "../../assets/050284a61b1befb9fd4efcb5ee28b0e8213df906.png";
+import logo5 from "../../assets/be057d547073de06678a38796ebc5c25417e74df.png";
+import logo6 from "../../assets/5d0ae4cf5528886a7469ba06f79edad53593e92d.png";
+import nexusLogo from "../../assets/96dee2bfb9864119bd21b5369f6dbcde771d81cc.png";
+import nexusDesignArabia from "../../assets/330faa420bd606ea43428f48ae75c04f6ac26483.png";
 
-const partners = [
-  "Seven Zone", "Town Burger", "Bassthalk", "Navigate PR", "Luminar Group",
-  "DreamCube", "VPW Creative", "Legear", "Intersport", "Carey Global",
-  "RPM3 Agency", "Logic Partners", "BUNYIP Equipment", "Sofa & Soul",
-  "Machter Auto", "SVC Media", "ADA Digital", "Dutton One", "Davies Collision", "Hometown AU",
+const defaultLogos = [
+  { src: sevenZoneLogo, alt: "Seven Zone" },
+  { src: geetLogo, alt: "Geet" },
+  { src: logo3, alt: "Brand 3" },
+  { src: logo4, alt: "Brand 4" },
+  { src: logo5, alt: "Brand 5" },
+  { src: logo6, alt: "Brand 6" },
+  { src: nexusLogo, alt: "Nexus" },
+  { src: nexusDesignArabia, alt: "Nexus Design Arabia" },
 ];
 
 export function EcosystemSection() {
-  const track1Ref = useRef<HTMLDivElement>(null);
-  const track2Ref = useRef<HTMLDivElement>(null);
+  const [logos, setLogos] = useState<{ src: string; alt: string }[]>(defaultLogos);
+  const [api, setApi] = useState<CarouselApi | null>(null);
 
   useEffect(() => {
-    let rafId: number;
-    let pos1 = 0;
-    let pos2 = 0;
-    const speed = 0.4;
-
-    const animate = () => {
-      pos1 -= speed;
-      pos2 += speed;
-
-      const halfWidth1 = (track1Ref.current?.scrollWidth ?? 0) / 2;
-      const halfWidth2 = (track2Ref.current?.scrollWidth ?? 0) / 2;
-
-      if (Math.abs(pos1) >= halfWidth1) pos1 = 0;
-      if (pos2 >= 0) pos2 = -halfWidth2;
-
-      if (track1Ref.current) track1Ref.current.style.transform = `translateX(${pos1}px)`;
-      if (track2Ref.current) track2Ref.current.style.transform = `translateX(${pos2}px)`;
-
-      rafId = requestAnimationFrame(animate);
+    const load = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/trusted-brands");
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list) && list.length) {
+            setLogos(list.map((b: any) => ({ src: b.image_url || "", alt: b.name || "Brand" })));
+          }
+        }
+      } catch {
+        /* noop */
+      }
     };
-
-    rafId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(rafId);
+    load();
   }, []);
 
-  const half1 = partners.slice(0, 10);
-  const half2 = partners.slice(10);
+  useEffect(() => {
+    if (!api) return;
+    const id = setInterval(() => {
+      api.scrollNext();
+    }, 2500);
+    return () => clearInterval(id);
+  }, [api]);
 
   return (
     <section className="relative bg-[#060606] py-24 md:py-32 overflow-hidden">
@@ -96,20 +112,42 @@ export function EcosystemSection() {
         </div>
       </div>
 
-      {/* Scrolling marquees */}
-      <div className="overflow-hidden mb-6" style={{ maskImage: "linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%)" }}>
-        <div className="flex" ref={track1Ref} style={{ whiteSpace: "nowrap", width: "max-content" }}>
-          {[...half1, ...half1].map((name, i) => (
-            <PartnerTag key={`t1-${i}`} name={name} />
-          ))}
-        </div>
-      </div>
-
-      <div className="overflow-hidden" style={{ maskImage: "linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%)" }}>
-        <div className="flex" ref={track2Ref} style={{ whiteSpace: "nowrap", width: "max-content", transform: "translateX(-50%)" }}>
-          {[...half2, ...half2].map((name, i) => (
-            <PartnerTag key={`t2-${i}`} name={name} variant="outlined" />
-          ))}
+      {/* Logo slider (editable via Admin → Trusted Brands) */}
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="relative">
+          <Carousel
+            opts={{ loop: true, align: "start" }}
+            className="w-full"
+            setApi={setApi}
+          >
+            <CarouselContent className="gap-6">
+              {logos.map((logo, i) => (
+                <CarouselItem key={i} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6">
+                  <div
+                    className="flex items-center justify-center rounded-xl"
+                    style={{ height: 80, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                  >
+                    <img
+                      src={logo.src}
+                      alt={logo.alt}
+                      className="max-h-full max-w-full object-contain"
+                      style={{ filter: "grayscale(100%) brightness(10)", opacity: 0.35 }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLImageElement).style.filter = "grayscale(0%) brightness(1)";
+                        (e.currentTarget as HTMLImageElement).style.opacity = "1";
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLImageElement).style.filter = "grayscale(100%) brightness(10)";
+                        (e.currentTarget as HTMLImageElement).style.opacity = "0.35";
+                      }}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </div>
 
@@ -117,24 +155,5 @@ export function EcosystemSection() {
       <div className="absolute bottom-0 left-0 right-0 h-px"
         style={{ background: "linear-gradient(90deg, transparent 0%, rgba(155,93,229,0.3) 50%, transparent 100%)" }} />
     </section>
-  );
-}
-
-function PartnerTag({ name, variant = "filled" }: { name: string; variant?: "filled" | "outlined" }) {
-  return (
-    <div
-      className="inline-flex items-center mx-3 px-6 py-3 rounded-full"
-      style={{
-        fontFamily: "DM Sans, sans-serif",
-        fontSize: "0.85rem",
-        letterSpacing: "0.05em",
-        color: variant === "filled" ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.35)",
-        background: variant === "filled" ? "rgba(255,255,255,0.05)" : "transparent",
-        border: variant === "filled" ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(255,255,255,0.06)",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {name}
-    </div>
   );
 }

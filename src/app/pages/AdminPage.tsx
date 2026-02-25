@@ -231,6 +231,7 @@ function HeroTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) => vo
   const [saving, setSaving] = useState(false);
   const [newService, setNewService] = useState("");
   const { toast, show } = useToast();
+  const [newMedia, setNewMedia] = useState<{ type: "image" | "video"; src: string }>({ type: "image", src: "" });
 
   const save = () => {
     setSaving(true);
@@ -246,6 +247,27 @@ function HeroTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) => vo
 
   const removeService = (i: number) =>
     setHero(h => ({ ...h, services: h.services.filter((_, idx) => idx !== i) }));
+
+  const addMedia = () => {
+    if (!newMedia.src.trim()) return;
+    setHero(h => ({ ...h, media: [...(h.media ?? []), { type: newMedia.type, src: newMedia.src.trim() }] }));
+    setNewMedia({ type: "image", src: "" });
+  };
+  const updateMediaType = (i: number, type: "image" | "video") =>
+    setHero(h => ({
+      ...h,
+      media: (h.media ?? []).map((m, idx) => (idx === i ? { ...m, type } : m)),
+    }));
+  const updateMediaSrc = (i: number, src: string) =>
+    setHero(h => ({
+      ...h,
+      media: (h.media ?? []).map((m, idx) => (idx === i ? { ...m, src } : m)),
+    }));
+  const removeMedia = (i: number) =>
+    setHero(h => ({
+      ...h,
+      media: (h.media ?? []).filter((_, idx) => idx !== i),
+    }));
 
   return (
     <div className="space-y-5">
@@ -308,6 +330,85 @@ function HeroTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) => vo
         </div>
       </Card>
 
+      {/* Background Media */}
+      <Card>
+        <SectionTitle>Background Media (Image / Video)</SectionTitle>
+        <div className="space-y-3">
+          {(hero.media ?? []).length === 0 && (
+            <p className="text-white/40 text-xs" style={{ fontFamily: "DM Sans, sans-serif" }}>
+              No slides yet. Add image or video sources below.
+            </p>
+          )}
+          {(hero.media ?? []).map((m, i) => (
+            <div key={i} className="grid md:grid-cols-5 gap-3 items-end">
+              <div className="md:col-span-1">
+                <Label>Type</Label>
+                <select
+                  value={m.type}
+                  onChange={(e) => updateMediaType(i, e.target.value as "image" | "video")}
+                  className="w-full px-3 py-2 rounded-xl text-white text-sm outline-none"
+                  style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.14)", fontFamily: "DM Sans, sans-serif", color: "#fff" }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(232,99,42,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(232,99,42,0.12)"; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; e.currentTarget.style.boxShadow = "none"; }}
+                >
+                  <option value="image">Image</option>
+                  <option value="video">Video</option>
+                </select>
+              </div>
+              <div className="md:col-span-3">
+                <Label>Source URL</Label>
+                <Input value={m.src} onChange={(v) => updateMediaSrc(i, v)} placeholder={m.type === "image" ? "https://…/image.jpg" : "https://…/video.mp4"} />
+              </div>
+              <div className="md:col-span-1">
+                <Label>Actions</Label>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => removeMedia(i)}
+                    className="px-4 py-2.5 rounded-xl text-red-400/70 hover:text-red-400 text-sm border-none cursor-pointer transition-colors"
+                    style={{ background: "rgba(255,255,255,0.06)", fontFamily: "DM Sans, sans-serif" }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="grid md:grid-cols-5 gap-3 items-end mt-4">
+          <div className="md:col-span-1">
+            <Label>Type</Label>
+            <select
+              value={newMedia.type}
+              onChange={(e) => setNewMedia({ ...newMedia, type: e.target.value as "image" | "video" })}
+              className="w-full px-3 py-2 rounded-xl text-white text-sm outline-none"
+              style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.14)", fontFamily: "DM Sans, sans-serif", color: "#fff" }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(232,99,42,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(232,99,42,0.12)"; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; e.currentTarget.style.boxShadow = "none"; }}
+            >
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+            </select>
+          </div>
+          <div className="md:col-span-3">
+            <Label>Source URL</Label>
+            <Input value={newMedia.src} onChange={(v) => setNewMedia({ ...newMedia, src: v })} placeholder="https://…" />
+          </div>
+          <div className="md:col-span-1">
+            <Label>&nbsp;</Label>
+            <button
+              onClick={addMedia}
+              className="px-4 py-2.5 rounded-xl text-white/60 hover:text-white text-sm border-none cursor-pointer transition-colors w-full"
+              style={{ background: "rgba(255,255,255,0.06)", fontFamily: "DM Sans, sans-serif" }}
+            >
+              + Add Slide
+            </button>
+          </div>
+        </div>
+        <p className="text-white/35 text-xs mt-3" style={{ fontFamily: "DM Sans, sans-serif" }}>
+          Videos play muted and loop automatically.
+        </p>
+      </Card>
+
       {/* CTAs */}
       <Card>
         <SectionTitle>CTA Labels</SectionTitle>
@@ -337,6 +438,13 @@ function TeamTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) => vo
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const { toast, show } = useToast();
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editing !== null) {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [editing]);
 
   const openNew = () => { setForm(EMPTY_MEMBER); setEditing("new"); };
   const openEdit = (m: TeamMember) => { setForm({ name: m.name, role: m.role, tag: m.tag, img: m.img, bio: m.bio, since: m.since, isLeadership: m.isLeadership }); setEditing(m.id); };
@@ -444,6 +552,7 @@ function TeamTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) => vo
 
       {/* Edit / Add form */}
       {editing !== null && (
+        <div ref={formRef}>
         <Card>
           <SectionTitle>{editing === "new" ? "Add New Member" : "Edit Member"}</SectionTitle>
           <div className="space-y-4">
@@ -466,6 +575,212 @@ function TeamTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) => vo
             </div>
           </div>
         </Card>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BrandsTab() {
+  const [headingPre, setHeadingPre] = useState("Trusted by");
+  const [headingGrad, setHeadingGrad] = useState("Growing Brands.");
+  const [brands, setBrands] = useState<Array<{ id?: number; name: string; image_url: string }>>([]);
+  const [editing, setEditing] = useState<{ id?: number; name: string; image_url: string } | null>(null);
+  const { toast, show } = useToast();
+  const [loading, setLoading] = useState(false);
+  const [headingId, setHeadingId] = useState<number | null>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [contentsRes, brandsRes] = await Promise.all([
+          fetch("http://127.0.0.1:8000/api/contents"),
+          fetch("http://127.0.0.1:8000/api/trusted-brands"),
+        ]);
+        if (contentsRes.ok) {
+          const contents = await contentsRes.json();
+          const item = contents.find((c: any) => c.key === "trusted_brands_heading");
+          if (item) {
+            setHeadingId(item.id);
+            try {
+              const parsed = item.type === "json" ? JSON.parse(item.value || "{}") : null;
+              if (parsed) {
+                if (typeof parsed.pre === "string") setHeadingPre(parsed.pre);
+                if (typeof parsed.gradient === "string") setHeadingGrad(parsed.gradient);
+              }
+            } catch {}
+          }
+        }
+        if (brandsRes.ok) {
+          const list = await brandsRes.json();
+          if (Array.isArray(list)) setBrands(list);
+        }
+      } catch {}
+    };
+    load();
+  }, []);
+
+  const token = sessionStorage.getItem("adluma_token") || "";
+
+  const saveHeading = async () => {
+    setLoading(true);
+    const payload = { value: JSON.stringify({ pre: headingPre, gradient: headingGrad }), type: "json" };
+    try {
+      if (headingId) {
+        const res = await fetch(`http://127.0.0.1:8000/api/contents/${headingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error();
+      } else {
+        const res = await fetch("http://127.0.0.1:8000/api/contents", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ key: "trusted_brands_heading", ...payload }),
+        });
+        if (!res.ok) throw new Error();
+        const created = await res.json();
+        setHeadingId(created.id);
+      }
+      show("Heading saved!");
+    } catch {
+      show("Failed to save heading", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openNew = () => setEditing({ name: "", image_url: "" });
+  const openEdit = (b: { id?: number; name: string; image_url: string }) => setEditing({ ...b });
+  const cancelEdit = () => setEditing(null);
+
+  const saveBrand = async () => {
+    if (!editing) return;
+    if (!editing.name.trim()) return;
+    setLoading(true);
+    try {
+      if (editing.id) {
+        const res = await fetch(`http://127.0.0.1:8000/api/trusted-brands/${editing.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ name: editing.name, image_url: editing.image_url }),
+        });
+        if (!res.ok) throw new Error();
+        const updated = await res.json();
+        setBrands(prev => prev.map(b => b.id === updated.id ? updated : b));
+      } else {
+        const res = await fetch("http://127.0.0.1:8000/api/trusted-brands", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ name: editing.name, image_url: editing.image_url }),
+        });
+        if (!res.ok) throw new Error();
+        const created = await res.json();
+        setBrands(prev => [...prev, created]);
+      }
+      show("Brand saved!");
+      setEditing(null);
+    } catch {
+      show("Failed to save brand", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteBrand = async (id?: number) => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/trusted-brands/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error();
+      setBrands(prev => prev.filter(b => b.id !== id));
+      show("Brand deleted");
+    } catch {
+      show("Failed to delete brand", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (editing) {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [editing]);
+
+  return (
+    <div className="space-y-5">
+      <Toast toast={toast} />
+
+      <Card>
+        <SectionTitle>Heading</SectionTitle>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div><Label>Pre-gradient</Label><Input value={headingPre} onChange={setHeadingPre} /></div>
+          <div><Label>Gradient word</Label><Input value={headingGrad} onChange={setHeadingGrad} /></div>
+        </div>
+        <div className="flex justify-end mt-4"><SaveBtn onClick={saveHeading} saving={loading} label="Save Heading" /></div>
+      </Card>
+
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-white/40 text-sm" style={{ fontFamily: "DM Sans, sans-serif" }}>{brands.length} brands</p>
+        <button onClick={openNew}
+          className="group relative inline-flex items-center gap-2 px-5 py-2 rounded-full text-white text-sm border-none cursor-pointer overflow-hidden"
+          style={{ fontFamily: "Syne, sans-serif", fontWeight: 600 }}>
+          <span className="absolute inset-0 rounded-full" style={{ background: "linear-gradient(105deg,#E8632A,#F5C842 55%,#9B5DE5)" }} />
+          <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-400"
+            style={{ background: "linear-gradient(105deg,#F5C842,#E8632A 55%,#9B5DE5)" }} />
+          <span className="relative z-10">+ Add Brand</span>
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        {brands.map(b => (
+          <Card key={b.id} className="flex items-center gap-4">
+            <div className="w-28 h-12 rounded-xl overflow-hidden flex-shrink-0" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+              {b.image_url ? <img src={b.image_url} alt={b.name} className="w-full h-full object-contain" /> : <div className="w-full h-full" />}
+            </div>
+            <div className="flex-1 min-w-0">
+              <span style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "0.9rem", color: "#fff" }}>{b.name}</span>
+              <p className="text-white/30 text-xs mt-0.5" style={{ fontFamily: "DM Sans, sans-serif" }}>{b.image_url}</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <button onClick={() => openEdit(b)}
+                className="px-3 py-1.5 rounded-lg text-xs text-white/50 hover:text-white transition-colors border-none cursor-pointer"
+                style={{ background: "rgba(255,255,255,0.06)", fontFamily: "DM Sans, sans-serif" }}>
+                Edit
+              </button>
+              <button onClick={() => deleteBrand(b.id)}
+                className="px-3 py-1.5 rounded-lg text-xs text-red-400/60 hover:text-red-400 transition-colors border-none cursor-pointer">
+                Delete
+              </button>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {editing && (
+        <div ref={formRef}>
+        <Card>
+          <SectionTitle>{editing.id ? "Edit Brand" : "New Brand"}</SectionTitle>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div><Label>Name</Label><Input value={editing.name} onChange={v => setEditing({ ...editing, name: v })} /></div>
+            <div><Label>Image URL or Data URI</Label><Input value={editing.image_url} onChange={v => setEditing({ ...editing, image_url: v })} /></div>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <button onClick={cancelEdit}
+              className="px-4 py-2.5 rounded-xl text-white/60 hover:text-white text-sm border-none cursor-pointer transition-colors"
+              style={{ background: "rgba(255,255,255,0.06)", fontFamily: "DM Sans, sans-serif" }}>
+              Cancel
+            </button>
+            <SaveBtn onClick={saveBrand} saving={loading} label={editing.id ? "Save Changes" : "Create Brand"} />
+          </div>
+        </Card>
+        </div>
       )}
     </div>
   );
@@ -499,6 +814,7 @@ function ProjectsTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) =
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const { toast, show } = useToast();
+  const formRef = useRef<HTMLDivElement>(null);
 
   const openNew = () => { setForm(EMPTY_PROJECT); setTagInput(""); setEditing("new"); };
   const openEdit = (p: Project) => {
@@ -532,6 +848,12 @@ function ProjectsTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) =
     setDeleteConfirm(null);
     show("Project removed.");
   };
+
+  useEffect(() => {
+    if (editing !== null) {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [editing]);
 
   return (
     <div className="space-y-5">
@@ -602,6 +924,7 @@ function ProjectsTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) =
 
       {/* Edit/Add Form */}
       {editing !== null && (
+        <div ref={formRef}>
         <Card>
           <SectionTitle>{editing === "new" ? "Add New Project" : "Edit Project"}</SectionTitle>
           <div className="space-y-4">
@@ -669,6 +992,7 @@ function ProjectsTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) =
             </div>
           </div>
         </Card>
+        </div>
       )}
     </div>
   );
@@ -832,31 +1156,47 @@ function SEOTab({ data, onSave }: { data: SiteData; onSave: (d: SiteData) => voi
 // ═══════════════════════════════════════════════════════
 
 function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
+  const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
-  const [error, setError] = useState(false);
   const [show, setShow] = useState(false);
-
-  const submit = (e: React.FormEvent) => {
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pw === "adluma2024") { setError(false); onSuccess(); }
-    else { setError(true); setTimeout(() => setError(false), 2000); }
+    setErrorMsg("");
+    setLoading(true);
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password: pw }),
+      });
+      if (!res.ok) {
+        setErrorMsg("Invalid credentials");
+      } else {
+        const data = await res.json();
+        sessionStorage.setItem("adluma_token", data.token);
+        sessionStorage.setItem("adluma_user", JSON.stringify(data.user));
+        sessionStorage.setItem("adluma_admin_auth", "true");
+        onSuccess();
+      }
+    } catch {
+      setErrorMsg("Network error");
+    } finally {
+      setLoading(false);
+    }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "#070707" }}>
-      {/* bg grid */}
       <div className="absolute inset-0 opacity-[0.025]" style={{
         backgroundImage: "linear-gradient(rgba(255,255,255,0.8) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.8) 1px,transparent 1px)",
         backgroundSize: "80px 80px",
       }} />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] pointer-events-none"
         style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(232,99,42,0.12) 0%,rgba(155,93,229,0.06) 55%,transparent 80%)", filter: "blur(30px)" }} />
-
       <div className="relative z-10 w-full max-w-sm mx-4">
         <form onSubmit={submit} className="rounded-2xl p-8"
           style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(20px)" }}>
-
-          {/* Logo area */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-xl flex items-center justify-center"
@@ -876,8 +1216,22 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
             </div>
             <p className="text-white/35 text-sm" style={{ fontFamily: "DM Sans, sans-serif" }}>Admin Access Required</p>
           </div>
-
           <div className="space-y-4">
+            <div>
+              <Label>Email</Label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="admin@example.com"
+                className="w-full px-4 py-3 rounded-xl text-white/85 text-sm outline-none placeholder-white/20"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  fontFamily: "DM Sans, sans-serif",
+                }}
+              />
+            </div>
             <div>
               <Label>Password</Label>
               <div className="relative">
@@ -885,17 +1239,14 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
                   type={show ? "text" : "password"}
                   value={pw}
                   onChange={e => setPw(e.target.value)}
-                  placeholder="Enter admin password"
+                  placeholder="admin1234"
                   className="w-full px-4 py-3 rounded-xl text-white/85 text-sm outline-none pr-10 placeholder-white/20"
                   style={{
                     background: "rgba(255,255,255,0.04)",
-                    border: `1px solid ${error ? "rgba(220,60,60,0.5)" : "rgba(255,255,255,0.08)"}`,
+                    border: "1px solid rgba(255,255,255,0.08)",
                     fontFamily: "DM Sans, sans-serif",
                     transition: "border-color 0.2s",
-                    boxShadow: error ? "0 0 0 3px rgba(220,60,60,0.08)" : "none",
                   }}
-                  onFocus={(e) => { if (!error) { e.currentTarget.style.borderColor = "rgba(232,99,42,0.5)"; e.currentTarget.style.boxShadow = "0 0 0 3px rgba(232,99,42,0.08)"; } }}
-                  onBlur={(e) => { if (!error) { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.boxShadow = "none"; } }}
                 />
                 <button type="button" onClick={() => setShow(s => !s)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors bg-transparent border-none cursor-pointer">
@@ -905,24 +1256,21 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
                   }
                 </button>
               </div>
-              {error && <p className="text-red-400 text-xs mt-1.5" style={{ fontFamily: "DM Sans, sans-serif" }}>Incorrect password. Try again.</p>}
             </div>
-
-            <button type="submit"
-              className="group relative w-full py-3 rounded-xl text-white text-sm border-none cursor-pointer overflow-hidden"
+            {errorMsg && <p className="text-red-400 text-xs" style={{ fontFamily: "DM Sans, sans-serif" }}>{errorMsg}</p>}
+            <button type="submit" disabled={loading}
+              className="group relative w-full py-3 rounded-xl text-white text-sm border-none cursor-pointer overflow-hidden disabled:opacity-60"
               style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, letterSpacing: "0.04em" }}>
               <span className="absolute inset-0" style={{ background: "linear-gradient(105deg,#E8632A,#F5C842 55%,#9B5DE5)" }} />
               <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400"
                 style={{ background: "linear-gradient(105deg,#F5C842,#E8632A 55%,#9B5DE5)" }} />
-              <span className="relative z-10">Enter Dashboard</span>
+              <span className="relative z-10">{loading ? "Signing in…" : "Enter Dashboard"}</span>
             </button>
           </div>
-
           <p className="text-center text-white/20 text-xs mt-6" style={{ fontFamily: "DM Sans, sans-serif" }}>
-            Hint: adluma2024
+            Use admin@example.com / admin1234
           </p>
         </form>
-
         <Link to="/" className="flex items-center justify-center gap-2 mt-5 text-white/25 hover:text-white/50 transition-colors text-xs no-underline"
           style={{ fontFamily: "DM Sans, sans-serif", letterSpacing: "0.12em" }}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -949,6 +1297,10 @@ const TABS = [
   {
     id: "projects", label: "Projects",
     icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>,
+  },
+  {
+    id: "brands", label: "Trusted Brands",
+    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>,
   },
   {
     id: "footer", label: "Footer",
@@ -1068,6 +1420,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
           {activeTab === "hero" && <HeroTab data={siteData} onSave={handleSave} />}
           {activeTab === "team" && <TeamTab data={siteData} onSave={handleSave} />}
           {activeTab === "projects" && <ProjectsTab data={siteData} onSave={handleSave} />}
+          {activeTab === "brands" && <BrandsTab />}
           {activeTab === "footer" && <FooterTab data={siteData} onSave={handleSave} />}
           {activeTab === "seo" && <SEOTab data={siteData} onSave={handleSave} />}
         </div>
@@ -1090,8 +1443,19 @@ export function AdminPage() {
     setAuthenticated(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const token = sessionStorage.getItem("adluma_token");
+    try {
+      if (token) {
+        await fetch("http://127.0.0.1:8000/api/logout", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+    } catch {}
     sessionStorage.removeItem("adluma_admin_auth");
+    sessionStorage.removeItem("adluma_token");
+    sessionStorage.removeItem("adluma_user");
     setAuthenticated(false);
   };
 

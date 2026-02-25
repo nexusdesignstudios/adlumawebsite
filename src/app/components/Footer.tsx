@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import logoImage from "figma:asset/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
+import logoImage from "../../assets/5e154046a90f5ea0433f1ff73ea3cc95d52835e5.png";
 import { useSiteData } from "../lib/siteDataStore";
 
 const quickLinks = [
