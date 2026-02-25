@@ -595,8 +595,8 @@ function BrandsTab() {
     const load = async () => {
       try {
         const [contentsRes, brandsRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/contents"),
-          fetch("http://127.0.0.1:8000/api/trusted-brands"),
+          fetch("/api/contents"),
+          fetch("/api/trusted-brands"),
         ]);
         if (contentsRes.ok) {
           const contents = await contentsRes.json();
@@ -628,14 +628,14 @@ function BrandsTab() {
     const payload = { value: JSON.stringify({ pre: headingPre, gradient: headingGrad }), type: "json" };
     try {
       if (headingId) {
-        const res = await fetch(`http://127.0.0.1:8000/api/contents/${headingId}`, {
+        const res = await fetch(`/api/contents/${headingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload),
         });
         if (!res.ok) throw new Error();
       } else {
-        const res = await fetch("http://127.0.0.1:8000/api/contents", {
+        const res = await fetch("/api/contents", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ key: "trusted_brands_heading", ...payload }),
@@ -662,7 +662,7 @@ function BrandsTab() {
     setLoading(true);
     try {
       if (editing.id) {
-        const res = await fetch(`http://127.0.0.1:8000/api/trusted-brands/${editing.id}`, {
+        const res = await fetch(`/api/trusted-brands/${editing.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ name: editing.name, image_url: editing.image_url }),
@@ -671,7 +671,7 @@ function BrandsTab() {
         const updated = await res.json();
         setBrands(prev => prev.map(b => b.id === updated.id ? updated : b));
       } else {
-        const res = await fetch("http://127.0.0.1:8000/api/trusted-brands", {
+        const res = await fetch("/api/trusted-brands", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
           body: JSON.stringify({ name: editing.name, image_url: editing.image_url }),
@@ -693,7 +693,7 @@ function BrandsTab() {
     if (!id) return;
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/trusted-brands/${id}`, {
+      const res = await fetch(`/api/trusted-brands/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

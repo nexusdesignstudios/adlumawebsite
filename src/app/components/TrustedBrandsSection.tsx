@@ -27,8 +27,8 @@ export function TrustedBrandsSection() {
     const load = async () => {
       try {
         const [contentsRes, brandsRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/contents"),
-          fetch("http://127.0.0.1:8000/api/trusted-brands"),
+          fetch("/api/contents"),
+          fetch("/api/trusted-brands"),
         ]);
         let newHeading = null as { pre: string; gradient: string } | null;
         if (contentsRes.ok) {

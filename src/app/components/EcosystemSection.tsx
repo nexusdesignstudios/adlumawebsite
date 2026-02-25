@@ -34,7 +34,7 @@ export function EcosystemSection() {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/trusted-brands");
+        const res = await fetch("/api/trusted-brands");
         if (res.ok) {
           const list = await res.json();
           if (Array.isArray(list) && list.length) {
@@ -42,7 +42,6 @@ export function EcosystemSection() {
           }
         }
       } catch {
-        /* noop */
       }
     };
     load();
